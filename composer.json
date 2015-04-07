@@ -3,7 +3,7 @@
    "type": "phpbb-extension",
    "description": "dice bbcode Extension for phpBB 3.1",
    "homepage": "https://github.com/hanelyp/phpbb",
-   "version": "0.1.0",
+   "version": "0.2.0",
    "time": "2015-03-12",
    "license": "GPL-2.0+",
    "keywords": ["bbcode", "dice"],
