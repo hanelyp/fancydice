@@ -1,0 +1,20 @@
+    [color=purple][size=120][b]Extension Name:[/b][/size][/color] fancydice
+    [color=purple][size=120][b]Author:[/b][/size][/color] [url=http://www.phpbb.com/community/memberlist.php?mode=viewprofile&u=1402511][b]hanely[/b][/url]
+
+    [color=purple][size=120][b]Extension Description:[/b][/size][/color] process [dice]<spec>[/dice] bbcode extension to produce a dice roll.
+   
+    [color=purple][size=120][b]Extension Version:[/b][/size][/color] 0.2 dev
+
+    [color=purple][size=120][b]Requirements:[/b][/size][/color] N/A
+    
+    [color=purple][size=120][b]Features:[/b][/size][/color]
+    	[list]Fancy in the sense of supporting a wide variety of dice, including non-numeric.[/list]
+    	[list]ACP code in current version is completely untested[/list]
+    	[list]processing is done when posts are submitted[/list]
+
+    [color=purple][size=120][b]Screenshots:[/b][/size][/color] Not yet
+
+    [color=purple][size=120][b]Demo URL:[/b][/size][/color] N/A
+
+    [color=purple][size=120][b]Extension Download:[/b][/size][/color] [url]https://github.com/hanelyp/phpbb/tree/master/hanelyp/fancydice[/url]
+

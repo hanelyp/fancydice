@@ -1,0 +1,27 @@
+{
+   "name": "hanelyp/fancydice",
+   "type": "phpbb-extension",
+   "description": "dice bbcode Extension for phpBB 3.1",
+   "homepage": "https://github.com/hanelyp/phpbb",
+   "version": "0.1.0",
+   "time": "2015-03-12",
+   "license": "GPL-2.0+",
+   "keywords": ["bbcode", "dice"],
+   "description_long": "extension bbcode [dice] is processed to resolve value of the dice.",
+   "authors": [{
+      "name": "Peter Hanely",
+      "email": "hanelyp@gmail.com",
+      "homepage": "https://github.com/hanelyp",
+      "role": "Lead Developer"
+   }],
+   "require": {
+      "php": ">=5.3.3",
+      "composer/installers": "~1.0"
+   },
+   "extra": {
+      "display-name": "Fancy Dice BBcode",
+      "soft-require" : {
+         "phpbb/phpbb": ">=3.1.0-RC2"
+      }
+   }
+}

@@ -1,0 +1,38 @@
+<!-- INCLUDE overall_header.html -->
+
+<h1>{L_SETTINGS}</h1>
+
+<form id="acp_board" method="post" action="{U_ACTION}">
+	<fieldset>
+		<div style="width:100%">
+		<table style="width:auto; margin-left:auto; margin-right:auto;">
+			<tr>
+				<td><label for="hanelyp_fancydice_name">{L_ACP_FANCYDICE_DIE_NAME}</label></td>
+				<td><label for="hanelyp_fancydice_def">{L_ACP_FANCYDICE_DIE_DEF}</label></td>
+			</tr>
+			<!-- BEGIN macros -->
+			<tr>
+				<td><input name="macroName_{macros.INDEX}" value="{macros.NAME}" size="10"/>&nbsp;
+				<td><input name="macroDef_{macros.INDEX}" value="{macros.DEF}" size="40"/>&nbsp;
+			</tr>
+			<!-- END macros -->
+			<tr>
+				<td colspan="2"> </td>
+			</tr>
+			<tr>
+				<td><input name="macroName_{U_NEXTINDEX}" value="" size="10"/>&nbsp;
+				<td><input name="macroDef_{U_NEXTINDEX}" value="" size="40"/>&nbsp;
+			</tr>
+		</table>
+		</div>
+
+		<p class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+			<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		</p>
+
+		{S_FORM_TOKEN}
+	</fieldset>
+</form>
+({L_FANCYDICE_SPECDEF})
+<!-- INCLUDE overall_footer.html -->
