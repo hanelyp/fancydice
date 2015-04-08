@@ -19,7 +19,7 @@ class ext extends \phpbb\extension\base
 
 	function enable_step($old_state)
 	{
-		echo 'step ',$old_state,'<br />';
+		//echo 'step ',$old_state,'<br />';
 		return parent::enable_step($old_state);
 		
 		switch ($old_state)

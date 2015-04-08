@@ -29,7 +29,7 @@ class main_module
 				foreach ($macro as $key=>$value)
 				{
 					//echo "$key=>$value<br />";
-					$macros[] = array('INDEX'=>$i, 'NAME'=>$key, 'DEF'=>$value);
+					$macros[] = array('INDEX'=>$i, 'NAME'=>$key, 'DEF'=>htmlentities($value));
 					//$macros[] = array('INDEX'=>$i, 'NAME'=>$macro[0], 'DEF'=>$macro[1]);
 				}
 				$i++;
