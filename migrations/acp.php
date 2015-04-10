@@ -84,7 +84,7 @@ class acp extends \phpbb\db\migration\migration
 	// brute force, but best option with opaque cache
 	function clearcache()
 	{
-		echo "clearing cache<br />";
+		//echo "clearing cache<br />";
 		global $cache;
 		$cache->purge();
 		return;
