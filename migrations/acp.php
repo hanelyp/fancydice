@@ -84,7 +84,12 @@ class acp extends \phpbb\db\migration\migration
 	// brute force, but best option with opaque cache
 	function clearcache()
 	{
-		$cachedir = "cache";
+		echo "clearing cache<br />";
+		global $cache;
+		$cache->purge();
+		return;
+		
+/*		$cachedir = "cache";
 
 		$dir = opendir($cachedir);
 	// Delete everything but index.htm and .htaccess
@@ -96,6 +101,7 @@ class acp extends \phpbb\db\migration\migration
 				unlink("$cachedir/$file");
 			}
 		}
+*/
 	}
 	
 	public function add_bbcode()
@@ -122,6 +128,7 @@ class acp extends \phpbb\db\migration\migration
 			//$this->cache->destroy('sql', BBCODES_TABLE);
 			$this->clearcache();
 		}
+		$this->clearcache();
 		$this->db->sql_freeresult($result);
 	}
 }
