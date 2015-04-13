@@ -98,6 +98,8 @@ class main_module
 		$template->assign_vars(array(
 			'U_ACTION'				=> $this->u_action,
 			'U_NEXTINDEX'			=> $i,
+			//'ACP_FANCYDICE_MACROS'	=> $user->lang('ACP_FANCYDICE_MACROS'),
+			//'ACP_FANCYDICE'			=> $user->lang('ACP_FANCYDICE'),
 		));
 	}
 }

@@ -229,15 +229,15 @@ class main_listener implements EventSubscriberInterface
 	{
 		//echo "$spec<br />";
 		$seed = rand();
-		$secure = $this->validate($seed);
+		$secure = $this->validate($seed, $spec);
 		return '[dice seed='.$seed.' secure='.$secure.':'.$uid.']'.$spec.'[/dice]';
 	}
 
 	// not the most secure, but enough to discourage fiddling with the seed
-	function validate($seed)
+	function validate($seed, $spec)
 	{
 		//echo $this->config['fancyDiceSecure'].' : '.$seed.'<br />';
-		return substr(sha1($this->config['fancyDiceSecure'].$seed),0, 8);
+		return substr(sha1($this->config['fancyDiceSecure'].$seed.$spec),0, 8);
 	}
 
 	// second pass won't call this correctly for post display, but does for post preview		
@@ -247,7 +247,7 @@ class main_listener implements EventSubscriberInterface
 		//debug_print_backtrace(0,2);
 		//echo "$spec $seed $secure ".$this->validate($seed)."<br />";
 		// validate seed against secure
-		$valid = $this->validate($seed)==$secure?'':' invalid';
+		$valid = $this->validate($seed, $spec)==$secure?'':' invalid';
 
 		$dice = new \hanelyp\fancydice\fancydice($this->macros, $seed);
 		$roll = $dice->roll($spec);
