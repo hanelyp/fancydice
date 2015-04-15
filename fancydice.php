@@ -108,8 +108,11 @@ The spec consists of the following tokens:
 	public $debug = 0;
 	public $macros;
 	public $randval;
+	public $maxtokens = 1000;
+	private $tokencount;
+	public $language;
 
-	function __construct($_macros = false, $seed = false)
+	function __construct($_macros = false, $seed = false, $language = false)
 	{
 		if (!$_macros)
 		{
@@ -120,6 +123,7 @@ The spec consists of the following tokens:
 		{
 			$seed = time();
 		}
+		$this->language = $language;
 		$this->randval = $seed;
 	}
 	
@@ -132,7 +136,23 @@ The spec consists of the following tokens:
 		$r = ($this->randval >> 16);
 		//echo "$r\n";
 		// $r < 0?  shouldn't be possible, but was found
+		if (($max-$min+1) <= 0)
+		{
+			echo "$max-$min<br />";
+		}
 		return $min + abs($r)%($max-$min+1);
+	}
+	
+	function push_token(&$stack, $token)
+	{
+		$this->tokencount++;
+		if ($this->tokencount > $this->maxtokens)
+		{
+			//echo 'too many tokens<br />';
+			//throw new \Exception('Too Many Dice Tokens');
+			throw new \Exception($this->language->lang('FANCYDICE_EXCESS_TOKENS'));
+		}
+		array_push($stack, $token);
 	}
 
 	function sum($vals)
@@ -247,12 +267,14 @@ The spec consists of the following tokens:
 
 			if (($type == '#') || ($type == '['))
 			{
-				array_push($rolll, $sign*$token);
+				//array_push($rolll, $sign*$token);
+				$this->push_token($rolll, $sign*$token);
 				$sign = 1;
 			}
 			if ($type == '"')
 			{
-				array_push($rolll, $token);
+				//array_push($rolll, $token);
+				$this->push_token($rolll, $token);
 				$sign = 1;
 			}
 
@@ -306,7 +328,8 @@ The spec consists of the following tokens:
 				}
 				for ($i = $last; $i <= $token; $i++)
 				{
-					array_push($rolll, $i);
+					//array_push($rolll, $i);
+					$this->push_token($rolll, $i);
 				}
 			}
 
@@ -354,7 +377,8 @@ The spec consists of the following tokens:
 				$token = $t[0];
 				$next = $t[1];
 				$ntype = $t[2];
-				array_push($rolll, $last*$token);
+				//array_push($rolll, $last*$token);
+				$this->push_token($rolll, $last*$token);
 				$roll = $next;
 			}
 
@@ -365,7 +389,15 @@ The spec consists of the following tokens:
 				$token = $t[0];
 				$next = $t[1];
 				$ntype = $t[2];
-				array_push($rolll, intval($last/$token));
+				//array_push($rolll, intval($last/$token));
+				if ($token != 0)
+				{
+					$this->push_token($rolll, intval($last/$token));
+				}
+				else
+				{
+					$this->push_token($rolll, 'div0');
+				}
 				$roll = $next;
 			}
 
@@ -422,8 +454,17 @@ The spec consists of the following tokens:
 
 	function roll($roll)
 	{
+		$this->tokencount = 0;
 		$stack = array();
-		$l = $this->parse($roll, $stack);
+		try
+		{
+			$l = $this->parse($roll, $stack);
+		}
+		catch(\Exception $e)
+		{
+			array_push($stack, $e->getMessage());
+			$l = array($stack);
+		}
 		//print_r($l);
 		return $l[0];
 	}

@@ -6,6 +6,20 @@ Clone into phpBB/ext/hanelyp/fancydice:
 
 Go to "ACP" > "Customise" > "Extensions" and enable the extension.
 
+## ACP configuration options
+
+### Configure Dice
+
+Configure dice supported.  common nDx+b format supported by default.  Use the blank slot to configure additional dice.
+
+### Presentation
+
+Set html for display of dice rolls. class dicebox is defined by a file under styles.
+
+### Reset BBcode Definition
+
+Use this if you accidently edit [dice] in the built in bbcode panel.
+
 ## dice spec language
 
 dice spec examples

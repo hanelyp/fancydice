@@ -62,6 +62,18 @@ class main_module
 		}
 	}
 
+	function reset_BB_code()
+	{
+		global $db;
+		$migration = new \hanelyp\fancydice\acp\defs();
+		$db->sql_query('UPDATE ' . BBCODES_TABLE .
+			' SET '.$db->sql_build_array('UPDATE', $migration->BB_sql_ary).
+			' WHERE bbcode_tag = "'.$migration->BB_sql_ary['bbcode_tag'].'"');
+		// need to clear cache here
+		global $cache;
+		$cache->purge();
+	}
+	
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache, $request;
@@ -79,10 +91,22 @@ class main_module
 			{
 				trigger_error('FORM_INVALID');
 			}
-
-			$this->set_macros();
-
-			trigger_error($user->lang('ACP_FANCYDICE_SETTING_SAVED') . adm_back_link($this->u_action));
+			$action = $request->variable('action', '');
+			if ($action == 'dicedef')
+			{
+				$this->set_macros();
+				trigger_error($user->lang('ACP_FANCYDICE_SETTING_SAVED') . adm_back_link($this->u_action));
+			}
+			elseif ($action == 'presentation')
+			{
+				$config->set('fancyDicePresent', html_entity_decode($request->variable('display', '')), 0);
+				trigger_error($user->lang('ACP_FANCYDICE_SETTING_PRESENT') . adm_back_link($this->u_action));
+			}
+			elseif ($action == 'resetbb')
+			{
+				$this->reset_BB_code();
+				trigger_error($user->lang('ACP_FANCYDICE_RESET_BB') . adm_back_link($this->u_action));
+			}
 		}
 
 		$macros = $this->get_macros();
@@ -98,6 +122,7 @@ class main_module
 		$template->assign_vars(array(
 			'U_ACTION'				=> $this->u_action,
 			'U_NEXTINDEX'			=> $i,
+			'U_DISPLAY_DEF'			=> htmlentities($config['fancyDicePresent']),
 			//'ACP_FANCYDICE_MACROS'	=> $user->lang('ACP_FANCYDICE_MACROS'),
 			//'ACP_FANCYDICE'			=> $user->lang('ACP_FANCYDICE'),
 		));

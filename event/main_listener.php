@@ -18,14 +18,18 @@ class main_listener implements EventSubscriberInterface
 {
 	private $dice;
 	static $myself;
+	public $user;
 	
 	/**
 	* Instead of using "global $user;" in the function, we use dependencies again.
 	*/
-	public function __construct($config)
+	public function __construct($config, $user)
 	{
 		//echo 'constructing listener, fancydice<br />';
+		//debug_print_backtrace(0,3);
 		$this->config = $config;
+		$user->add_lang_ext('hanelyp/fancydice', 'common');
+		$this->user = $user;
 		//$this->prep_bbcode();
 		//echo "setting self for singlet<br />";
 		self::singlet($this);
@@ -39,12 +43,19 @@ class main_listener implements EventSubscriberInterface
 //			'core.modify_submit_post_data'		=> 'dice_process_post',
 //			'core.modify_text_for_storage_before'	=> 'dice_process_post',
 
+// must call this before normal bbcode runs or bbcode messes up with multiple rolls on a post
+	// called for post display
 			'core.modify_text_for_display_before'	=> 'dice_process_text',
+//			'core.modify_text_for_display_after'	=> 'dice_process_text',
+// called for post preview, doesn't hit for normal bbcode trigger?
+			'core.modify_format_display_text_after'	=> 'dice_process_text',
 
 //			'core.posting_modify_message_text'		=> 'dice_process_posting',
 
-//			'core.bbcode_cache_init_end'		=> 'bbcode_add_wrap',
-			'core.modify_bbcode_init'			=> 'bbcode_add_wrap',
+//			'core.bbcode_cache_init_end'			=> 'bbcode_add_wrap',
+// make sure this is constructed before bbcode is run
+			'core.modify_bbcode_init'				=> 'bbcode_add_wrap',
+//			'core.modify_text_for_display_before'	=> 'bbcode_add_wrap',
 		);
 	}
 /*
@@ -148,7 +159,8 @@ class main_listener implements EventSubscriberInterface
 		$that = $this;
 		//preg_replace_callback('/(\[dice\])(.*)([[\\dice\]/)', $this->replace_dice, $message);
 		//preg_replace_callback('/(\[dice\])(.*)(\[\\dice\])/',
-		$message = preg_replace_callback('#\[dice\s+seed=(\d+)\s+secure=(\w+):?\w*\](.+)\[/dice\]#i',
+		$message = preg_replace_callback(//'#\[dice\s+seed=(\d+)\s+secure=(\w+):?\w*\](.+)\[/dice\]#i',
+										'#\[dice\sseed=(\d+)\ssecure=(\w+):?\w*\](.+?)\[/dice\]#i',
 										//'/\[dice\s*seed=(\d+)\s*secure=(\w+)\](.*)\[\\dice\]/i',
 			function($matches) use ($that)
 			{
@@ -219,7 +231,8 @@ class main_listener implements EventSubscriberInterface
 		}
 		if (!self::$myself)
 		{
-			self::$myself = new main_listener(false);
+			// dubious
+			self::$myself = new main_listener(false, false);
 		} // */
 		return self::$myself;
 	}
@@ -245,15 +258,27 @@ class main_listener implements EventSubscriberInterface
 	{
 		//return
 		//debug_print_backtrace(0,2);
-		//echo "$spec $seed $secure ".$this->validate($seed)."<br />";
+		//echo "$spec - $seed - $secure - ".$this->validate($seed, $spec)."<br />";
 		// validate seed against secure
-		$valid = $this->validate($seed, $spec)==$secure?'':' invalid';
+		$validate = $this->validate($seed, $spec);
+		$valid = $validate==$secure?'':' invalid';
+/*		if (strlen($valid) > 0)
+		{
+			echo "$spec - $seed - $secure - $validate<br />";
+			//debug_print_backtrace(0,4);
+			//echo '<br />';
+		} // */
 
-		$dice = new \hanelyp\fancydice\fancydice($this->macros, $seed);
+		$dice = new \hanelyp\fancydice\fancydice($this->macros, $seed, $this->user);
 		$roll = $dice->roll($spec);
 		$total = $dice->sum($roll);
 
-		return '<div class="dicebox">'.$spec.' => '.join(', ', $roll).' => '.$total.$valid.'</div>';
+		//return '<div class="dicebox">'.$spec.' => '.join(', ', $roll).' => '.$total.$valid.'</div>';
+		$pattern = $this->config['fancyDicePresent'];
+		return preg_replace (array('#{spec}#i', '#{dice}#i', '#{total}#i', '#{valid}#i'),
+					array($spec, join(', ', $roll), $total, $valid),
+					$pattern);
+		//return $pattern;
 	}
 }
 

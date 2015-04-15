@@ -7,6 +7,19 @@ namespace hanelyp\fancydice\migrations;
 
 class acp extends \phpbb\db\migration\migration
 {
+/*	var $BB_sql_ary = array(
+		//		'bbcode_id'					=> $this->bbcodecount(),
+				'bbcode_tag'				=> 'dice',
+				'bbcode_match'				=> '#[dice\s+seed={number}\s+secure={simpletext}]{text}[/dice]#ie',
+				'bbcode_tpl'				=> '<blockquote>hanelyp\fancydice\event\main_listener::singlet()->replace_dice("{text}",{number},"{simpletext}")</blockquote>',
+				'display_on_posting'		=> 1,
+				'bbcode_helpline'			=> '[dice]3d6+1[/dice]',
+				'first_pass_match'			=> '#\[dice\](.+)\[/dice\]#ie',
+				'first_pass_replace'		=> 'hanelyp\fancydice\event\main_listener::singlet()->prep_dice("$1","$uid")',
+				'second_pass_match'			=> '#\[dice\s+seed=(\d+)\s+secure=(\w+):?\w*\](.+)\[/dice\]#i',
+				'second_pass_replace'		=> 'hanelyp\fancydice\event\main_listener::singlet()->bb_replace_dice("$3",$1,"$2")',
+	); // */
+	
 	// needed to prevent an activation crash, even if it does nothing.
 	public function effectively_installed()
 	{
@@ -36,7 +49,10 @@ class acp extends \phpbb\db\migration\migration
 			array('config.add',
 				array('fancyDiceSecure', rand() )
 			),
-
+			array('config.add',
+				array('fancyDicePresent', '<div class="dicebox">{SPEC} => {DICE} => {TOTAL} {VALID}</div>' )
+			),
+			
 			array('module.add', array(
 				'acp',
 				'ACP_CAT_DOT_MODS',
@@ -122,7 +138,7 @@ class acp extends \phpbb\db\migration\migration
 				'first_pass_replace'		=> 'hanelyp\fancydice\event\main_listener::singlet()->prep_dice("$1","$uid")',
 				'second_pass_match'			=> '#\[dice\s+seed=(\d+)\s+secure=(\w+):?\w*\](.+)\[/dice\]#i',
 				'second_pass_replace'		=> 'hanelyp\fancydice\event\main_listener::singlet()->bb_replace_dice("$3",$1,"$2")',
-			);
+			); // */
 			$this->db->sql_query('INSERT INTO ' . BBCODES_TABLE . $this->db->sql_build_array('INSERT', $sql_ary));
 			// need to clear cache here
 			//$this->cache->destroy('sql', BBCODES_TABLE);

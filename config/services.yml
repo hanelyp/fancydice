@@ -3,5 +3,6 @@ services:
         class: hanelyp\fancydice\event\main_listener
         arguments:
             - @config
+            - @user
         tags:
             - { name: event.listener }

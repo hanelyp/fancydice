@@ -25,14 +25,46 @@
 			</tr>
 		</table>
 		</div>
-
+		<input type="hidden" name="action" value="dicedef" />
 		<p class="submit-buttons">
 			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
 			<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
 		</p>
-
 		{S_FORM_TOKEN}
 	</fieldset>
 </form>
 ({L_FANCYDICE_SPECDEF})
+<hr />
+<form id="acp_board" method="post" action="{U_ACTION}">
+	<fieldset>
+		<div style="width:100%">
+		<table style="width:auto; margin-left:auto; margin-right:auto;">
+			<tr><td>{L_ACP_FANCYDICE_PRESENTATION}</td></tr>
+			<tr><td><textarea name="display" rows="4" cols="80" style="width:100%" >{U_DISPLAY_DEF}</textarea></td></tr>
+		</table>
+		<input type="hidden" name="action" value="presentation" />
+		<p class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+			<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		</p>
+		</div>
+		{S_FORM_TOKEN}
+	</fieldset>
+	{L_ACP_FANCYDICE_PRESENTATION_HELP}
+</form>
+<hr />
+<form id="acp_board" method="post" action="{U_ACTION}">
+	<fieldset>
+		<div style="width:100%">
+		{L_ACP_FANCYDICE_RESET}
+		<input type="hidden" name="action" value="resetbb" />
+		<p class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+			<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		</p>
+		</div>
+		{S_FORM_TOKEN}
+	</fieldset>
+</form>
+
 <!-- INCLUDE overall_footer.html -->
