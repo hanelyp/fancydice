@@ -1,0 +1,12 @@
+{
+    "stable": {
+    },
+    "unstable": {
+        "0.7": {
+            "current": "0.7",
+            "announcement": "https://www.phpbb.com/community/posting.php?f=456&t=2306161",
+            "eol": null,
+            "security": false
+        }
+    }
+}

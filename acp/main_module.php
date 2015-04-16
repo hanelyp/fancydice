@@ -99,7 +99,9 @@ class main_module
 			}
 			elseif ($action == 'presentation')
 			{
-				$config->set('fancyDicePresent', html_entity_decode($request->variable('display', '')), 0);
+				//echo $request->variable('display', '', true),'<br />';
+				//echo html_entity_decode($request->variable('display', '', true)),'<br />';
+				$config->set('fancyDicePresent', html_entity_decode($request->variable('display', '', true)), 0);
 				trigger_error($user->lang('ACP_FANCYDICE_SETTING_PRESENT') . adm_back_link($this->u_action));
 			}
 			elseif ($action == 'resetbb')

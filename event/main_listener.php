@@ -261,7 +261,7 @@ class main_listener implements EventSubscriberInterface
 		//echo "$spec - $seed - $secure - ".$this->validate($seed, $spec)."<br />";
 		// validate seed against secure
 		$validate = $this->validate($seed, $spec);
-		$valid = $validate==$secure?'':' invalid';
+		$valid = $validate==$secure?'':$this->user->lang('FANCYDICE_FIDDLED'); //' invalid';
 /*		if (strlen($valid) > 0)
 		{
 			echo "$spec - $seed - $secure - $validate<br />";
@@ -275,9 +275,9 @@ class main_listener implements EventSubscriberInterface
 
 		//return '<div class="dicebox">'.$spec.' => '.join(', ', $roll).' => '.$total.$valid.'</div>';
 		$pattern = $this->config['fancyDicePresent'];
-		return preg_replace (array('#{spec}#i', '#{dice}#i', '#{total}#i', '#{valid}#i'),
+		return preg_replace (array('#{spec}#i', '#{dice}#i', '#{total}#i', '#{valid}#iu'),
 					array($spec, join(', ', $roll), $total, $valid),
-					$pattern);
+					$pattern); // */
 		//return $pattern;
 	}
 }

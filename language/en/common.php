@@ -32,4 +32,5 @@ $lang = array_merge($lang, array(
 	'ACP_FANCYDICE_RESET'		=> 'Reset [dice] BBcode definition',
 	'FANCYDICE_SPECDEF'			=> 'see fancydice.php in this module for dice definition specs',
 	'FANCYDICE_EXCESS_TOKENS'	=> 'Too Many Dice Tokens',
+	'FANCYDICE_FIDDLED'			=> 'invalid',
 ));
