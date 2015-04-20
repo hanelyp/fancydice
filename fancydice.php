@@ -136,9 +136,13 @@ The spec consists of the following tokens:
 		$r = ($this->randval >> 16);
 		//echo "$r\n";
 		// $r < 0?  shouldn't be possible, but was found
-		if (($max-$min+1) <= 0)
+	/*	if (($max-$min+1) <= 0)
 		{
 			echo "$max-$min<br />";
+		} // */
+		if ($max <= $min)
+		{
+			return $min;
 		}
 		return $min + abs($r)%($max-$min+1);
 	}
@@ -168,8 +172,9 @@ The spec consists of the following tokens:
 		  	$val = $this->sum($val);
 		  }
 		  //print_r($val); echo "\n";
-		  if (preg_match('/[^\d]/', $val))
-		  { array_push ($strings, $val); }
+		  //if (preg_match('/[^\d]/', $val))
+		  if (!is_numeric($val))
+		  {	array_push ($strings, $val); }
 		  else
 		  { $sum += $val; }
 		}
@@ -186,6 +191,10 @@ The spec consists of the following tokens:
 		}
 		//return $list[rand(0,count($list)-1)];
 		//print_r($list);
+		if (count($list) == 1)
+		{
+			return $list[0];
+		}
 		return $list[$this->rand(0,count($list)-1)];
 	}
 
@@ -198,27 +207,27 @@ The spec consists of the following tokens:
 			return array('', '', ']');
 		}
 		
-		if (preg_match('/^(\d+)(.*)/', $roll, $matches)) # number
+		if (preg_match('/^\s*(\d+)(.*)/', $roll, $matches)) # number
 		{
 			return array($matches[1], $matches[2], '#');
 		}
 
-		if (preg_match('/^"([^"]*)"(.*)/', $roll, $matches)) # string
+		if (preg_match('/^\s*"([^"]*)"(.*)/', $roll, $matches)) # string
 		{
 			return array($matches[1], $matches[2], '"');
 		}
 		 
-		if (preg_match('/^([a-zA-Z]+)(.*)/', $roll, $matches)) # macro
+		if (preg_match('/^\s*([a-zA-Z]+)(.*)/', $roll, $matches)) # macro
 		{
 			return array($matches[1], $matches[2], 'm');
 		}
 
-		if (preg_match('/^([\_\@\-\*\/])(.*)/', $roll, $matches) ) # _, @, -, *, /
+		if (preg_match('/^\s*([\_\@\-\*\/])(.*)/', $roll, $matches) ) # _, @, -, *, /
 		{
 			return array($matches[1], $matches[2], $matches[1]);
 		}
 
-		if (preg_match('/^(\()(.*)/', $roll, $matches) ) # sum of...
+		if (preg_match('/^\s*(\()(.*)/', $roll, $matches) ) # sum of...
 		{
 			$stack = array();
 			$t = $this->parse($matches[2], $stack);
@@ -228,7 +237,7 @@ The spec consists of the following tokens:
 			return array($token, $roll, '#');
 		}
 
-		if (preg_match('/^(\[)(.*)/', $roll, $matches) ) # selection of...
+		if (preg_match('/^\s*(\[)(.*)/', $roll, $matches) ) # selection of...
 		{
 			$stack = array();
 			$t = $this->parse($matches[2], $stack);
@@ -236,26 +245,27 @@ The spec consists of the following tokens:
 			$roll = $t[1];
 			$token = $this->selection($list);
 			//if (preg_match('/^\d+$/', $token))
-			if (preg_match('/[^\d]/', $token))
+			//if (preg_match('/[^\d]/', $token))
+			if (!is_numeric($token))
 			{	$type = '"';	}
 			else
 			{	$type = '#';	}
 			return array($token, $roll, $type);
 		}
 
-		if (preg_match('/^(\?)(.*)/', $roll, $matches))
+		if (preg_match('/^\s*(\?)(.*)/', $roll, $matches))
 		{
 			return array('?', $matches[2], '?');
 		}
 		
-		if (preg_match('/^([\]\)])(.*)/', $roll, $matches))# end tags
+		if (preg_match('/^\s*([\]\)])(.*)/', $roll, $matches))# end tags
 		{
 			//print_r($matches);
 			return array($matches[1], $matches[2], ']');
 		}
 
 	# else
-		preg_match('/(.)(.*)/', $roll, $matches);
+		preg_match('/\s*(.)(.*)/', $roll, $matches);
 		return array($matches[1], $matches[2], $matches[1]);
 	}
 
@@ -288,7 +298,9 @@ The spec consists of the following tokens:
 					{	echo "macro $token => $macro\n";	}
 					if (preg_match('/>/', $macro))
 					{
+						//echo $roll, "\n";
 						$t = $this->parsetoken($roll);
+						//print_r($t);
 						$token = $t[0];
 						$roll = $t[1];
 						$macro = preg_replace('/>/', $token, $macro);
@@ -300,6 +312,10 @@ The spec consists of the following tokens:
 				}
 				else
 				{
+					if ($this->debug)
+					{
+						echo 'unknown macro '.$token."\n";
+					}
 					$list = $token;	
 				}
 				if ($this->debug)

@@ -17,22 +17,33 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class main_listener implements EventSubscriberInterface
 {
 	private $dice;
+	private $macros = false;
+//	private $bbcode;
 	static $myself;
 	public $user;
-	
+	private $user_lastpost_time = false;
+	private $rollcount = 0;
+		
 	/**
 	* Instead of using "global $user;" in the function, we use dependencies again.
 	*/
 	public function __construct($config, $user)
 	{
 		//echo 'constructing listener, fancydice<br />';
-		//debug_print_backtrace(0,3);
+	/*	if (!isset($config['fancyDiceMacro_1']))
+		{
+			debug_print_backtrace(0,3);
+		} // */
 		$this->config = $config;
 		$user->add_lang_ext('hanelyp/fancydice', 'common');
 		$this->user = $user;
+//		$this->bbcode = $bbcode;
 		//$this->prep_bbcode();
 		//echo "setting self for singlet<br />";
 		self::singlet($this);
+		//global $last_post_time;
+		//echo 'post time '.$last_post_time.'<br />';
+		//echo $user->data['user_lastpost_time'].'<br />';
 	}
 	
 	static public function getSubscribedEvents()
@@ -50,12 +61,13 @@ class main_listener implements EventSubscriberInterface
 // called for post preview, doesn't hit for normal bbcode trigger?
 			'core.modify_format_display_text_after'	=> 'dice_process_text',
 
-//			'core.posting_modify_message_text'		=> 'dice_process_posting',
+			'core.posting_modify_message_text'		=> 'dice_process_posting',
 
 //			'core.bbcode_cache_init_end'			=> 'bbcode_add_wrap',
 // make sure this is constructed before bbcode is run
 			'core.modify_bbcode_init'				=> 'bbcode_add_wrap',
 //			'core.modify_text_for_display_before'	=> 'bbcode_add_wrap',
+//			'core.user_setup'						=> 'user_data',
 		);
 	}
 /*
@@ -68,23 +80,33 @@ class main_listener implements EventSubscriberInterface
 	function get_macros()
 	{
 		global $config;
-		$macros = false;
-		if (isset($config['fancyDiceMacro_1']))
+		//$macros = false;
+		$macros = $this->macros;
+		if (!$macros)
 		{
-			$macros = array();
-			$i = 1;
-			while (isset($config['fancyDiceMacro_'.$i]))
+			if (isset($config['fancyDiceMacro_1']))
 			{
-				$macro = json_decode($config['fancyDiceMacro_'.$i]);
-				//$macro = explode(':', $config['fancyDiceMacro_'.$i]);
-				foreach ($macro as $key=>$value)
+				$macros = array();
+				$i = 1;
+				while (isset($config['fancyDiceMacro_'.$i]))
 				{
-					$macros[$key] = $value;
-					//$macros[$macro[0]] = array('INDEX'=>$i, 'NAME'=>$macro[0], 'DEF'=>$macro[1]);
+					$macro = json_decode($config['fancyDiceMacro_'.$i]);
+					//$macro = explode(':', $config['fancyDiceMacro_'.$i]);
+					foreach ($macro as $key=>$value)
+					{
+					//	echo "$i $key => $value<br />";
+						$macros[$key] = $value;
+						//$macros[$macro[0]] = array('INDEX'=>$i, 'NAME'=>$macro[0], 'DEF'=>$macro[1]);
+					}
+					$i++;
 				}
-				$i++;
 			}
+			$this->macros = $macros;
 		}
+	/*	else
+		{
+			debug_print_backtrace(0,3);
+		} // */
 		return $macros;
 	}
 
@@ -94,77 +116,33 @@ class main_listener implements EventSubscriberInterface
 
 	}
 	
-	// scan message for [dice] bbcode tag, and replace with processed dice
-/*	public function dice_process($event)
+	public function user_data($event)
 	{
-		$post_row = $event['post_row'];
-		$post_id = $post_row['POST_ID'];
-		$message = $post_row['MESSAGE'];
-		global $config;
-		
-		// load configured macros
-		$macros = $this->get_macros();
-		
-		$this->dice = new \hanelyp\fancydice\fancydice($macros, $post_id);
-
-		//$matches = array();
-		preg_replace_callback('/(\[dice\])(.*)([[\\dice\]/)', $this->replace_dice, $message);
+		print_r($event['user_data']);
 	}
-// */
-	// scan message for [dice] bbcode tag, and replace with processed dice
-	// run before message is recorded, preserves results for quotes
-/*	public function dice_process_post($event)
+
+	public function dice_process_posting($event)
 	{
-		//echo "dice processing<br />";
-		$post = $event['data'];
-		//$post_id = $post['POST_ID'];
-		$message = $post['message'];
-		global $config;
-		//echo $message;
-		
-		// load configured macros
-		$macros = $this->get_macros();
-		
-		$this->dice = new \hanelyp\fancydice\fancydice($macros);
-
-		//$matches = array();
-		//preg_replace_callback('/(\[dice\])(.*)([[\\dice\]/)', $this->replace_dice, $message);
-		preg_replace_callback('/(\[dice\])(.*)(\[\\dice\])/',
-			function($matches) use ($that)
-			{
-				return $that->replace_dice($matches);
-			}
-			, $message);
-		//echo $message;
-		$event['message'] = $message;
+		//echo 'dice_process_posting<br />';
+		/*
+		cancel, forum_id, load, message_parser, mode, post_data, post_id, preview, refresh, save, submit, topic_id 
+		*/
+		//print_r ($event['post_data']);
+		//echo '<br />';
+		$message = $event['message_parser']->message.'<br />';
+		// count already prepped dice in post
+		$this->rollcount = preg_match_all('#\[dice\sseed=(\d+)\ssecure=(\w+):?\w*\](.+?)\[/dice\]#i',
+					$message);
+		//echo 'prior count '.$this->rollcount.'<br />';
 	}
-// */
+
 	public function dice_process_text($event)
 	{
-//		echo "dice processing text<br />";
-		//print_r($event); die();
-		//$post = $event['data'];
-		//$post_id = $post['POST_ID'];
-		//print_r($post);		
-		$message = $event['text'];	//$post['text'];
-		//global $config;
-		//echo $message,'<br />';
-		
-		// load configured macros
-		$this->macros = $this->get_macros();
-		
-		//$this->dice = new \hanelyp\fancydice\fancydice($macros);
-
-		//$matches = array();
+		$message = $event['text'];
 		$that = $this;
-		//preg_replace_callback('/(\[dice\])(.*)([[\\dice\]/)', $this->replace_dice, $message);
-		//preg_replace_callback('/(\[dice\])(.*)(\[\\dice\])/',
-		$message = preg_replace_callback(//'#\[dice\s+seed=(\d+)\s+secure=(\w+):?\w*\](.+)\[/dice\]#i',
-										'#\[dice\sseed=(\d+)\ssecure=(\w+):?\w*\](.+?)\[/dice\]#i',
-										//'/\[dice\s*seed=(\d+)\s*secure=(\w+)\](.*)\[\\dice\]/i',
+		$message = preg_replace_callback('#\[dice\sseed=(\d+)\ssecure=(\w+):?\w*\](.+?)\[/dice\]#i',
 			function($matches) use ($that)
 			{
-				//return $that->replace_dice($matches);
 				return $that->text_replace_dice($matches);
 			}
 			, $message);
@@ -179,49 +157,6 @@ class main_listener implements EventSubscriberInterface
 		return $this->bb_replace_dice($matches[3], $matches[1], $matches[2]);
 	}
 
-	// obsolete early processing.  replaced by bb_prep_dice invoked through bbcode first pass.
-/*	public function dice_process_posting($event)
-	{
-		//return;
-		echo "dice posting<br />";
-		$message = $event['message_parser']->message;
-		// need to replace post_id here.  Will be covered by bbcode integration being considered
-		//echo $event['post_id'],'<br />',$message, '<br />';
-//		global $config;
-		
-		// load configured macros
-		$macros = $this->get_macros();
-		
-		$this->dice = new \hanelyp\fancydice\fancydice($macros, $event['post_id']);
-		//$this->dice->debug = true;
-		//$this->dice->debug = true;
-		$that = $this;
-		//preg_replace_callback('/(\[dice\])(.*)([[\\dice\]/)', $this->replace_dice, $message);
-		//$message = preg_replace_callback('/\\[dice\\]([^\/]+)(\/dice\\])/',
-		$message = preg_replace_callback('/\\[dice\\](.+)(\\[\/dice\\])/',
-			function($matches) use ($that)
-			{
-				return $that->replace_dice($matches);
-			}
-			, $message);
-		//$event['preview'] = $message;
-		//echo $message, '<br />';
-		$event['message_parser']->message = $message;
-		//return ($event);
-	}
-	
-	public function replace_dice($matches)
-	{
-		$spec = $matches[1];
-		// trim trailing [
-		//$spec = substr($matches[1], 0, strlen($spec)-1);
-		//echo 'replacing '.$spec.'<br />';
-		$roll = $this->dice->roll($spec);
-		$total = $this->dice->sum($roll);
-
-		return '[quote]'.$spec.' => '.join(', ', $roll).' => '.$total.'[/quote]';
-	}
-// */
 	// start direct bbcode integration
 	static function singlet($me = false)
 	{
@@ -237,11 +172,23 @@ class main_listener implements EventSubscriberInterface
 		return self::$myself;
 	}
 
+	function get_seed()
+	{
+		//return rand();
+		// random enough value that should never change over the course of making a post,
+		//	but always between posts
+		return $this->user->data['user_lastpost_time'] ^
+				1*$this->user->data['user_email_hash'] ^
+				($this->config['fancyDiceSecure']*$this->rollcount++);
+	}
+	
 	// invoked by bbcode first pass
 	public function bb_prep_dice($spec, $uid)
 	{
 		//echo "$spec<br />";
-		$seed = rand();
+		//global $last_post_time;
+		//echo 'last post '.$last_post_time.'<br />';
+		$seed = $this->get_seed(); //rand();
 		$secure = $this->validate($seed, $spec);
 		return '[dice seed='.$seed.' secure='.$secure.':'.$uid.']'.$spec.'[/dice]';
 	}
@@ -269,14 +216,23 @@ class main_listener implements EventSubscriberInterface
 			//echo '<br />';
 		} // */
 
-		$dice = new \hanelyp\fancydice\fancydice($this->macros, $seed, $this->user);
+		$dice = new \hanelyp\fancydice\fancydice($this->get_macros(), $seed, $this->user);
+		//$dice->debug = true;
 		$roll = $dice->roll($spec);
 		$total = $dice->sum($roll);
 
+		$roll1 = join(', ', $roll);
+		$roll1 = preg_replace (array('#&gt;#', '#&quot;#'),
+							array('>', '"'),
+							$roll1);
+		$total = preg_replace (array('#&gt;#', '#&quot;#'),
+							array('>', '"'),
+							$total);
+							
 		//return '<div class="dicebox">'.$spec.' => '.join(', ', $roll).' => '.$total.$valid.'</div>';
 		$pattern = $this->config['fancyDicePresent'];
 		return preg_replace (array('#{spec}#i', '#{dice}#i', '#{total}#i', '#{valid}#iu'),
-					array($spec, join(', ', $roll), $total, $valid),
+					array($spec, $roll1, $total, $valid),
 					$pattern); // */
 		//return $pattern;
 	}
