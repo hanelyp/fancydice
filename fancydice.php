@@ -142,6 +142,10 @@ The spec consists of the following tokens:
 		} // */
 		if ($max <= $min)
 		{
+			$t = $max;	$max = $min; $min = $t;
+		}
+		if ($max == $min)
+		{
 			return $min;
 		}
 		return $min + abs($r)%($max-$min+1);
