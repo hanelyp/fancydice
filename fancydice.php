@@ -195,10 +195,10 @@ The spec consists of the following tokens:
 		}
 		//return $list[rand(0,count($list)-1)];
 		//print_r($list);
-		if (count($list) == 1)
-		{
-			return $list[0];
-		}
+	//	if (count($list) == 1)
+	//	{
+	//		return $list[0];
+	//	}
 		return $list[$this->rand(0,count($list)-1)];
 	}
 
