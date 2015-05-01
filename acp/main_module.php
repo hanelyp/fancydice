@@ -114,10 +114,24 @@ class main_module
 		$macros = $this->get_macros();
 		
 		$i = 1;
+		$dice = new \hanelyp\fancydice\event\main_listener($config, $user);
 		foreach ($macros as $macro)
 		{
 			//$macro['index'] = $i; 
 			//echo json_encode($macro),'<br />';
+			// construct a test case
+			$spec = $macro['NAME'];
+			if (preg_match('/(\@)/', $macro['DEF']))
+			{
+				$spec = '3'.$spec;
+			}
+			//echo preg_match('/(\>)/', $macro['DEF']), $macro['DEF'], '<br />';
+			if (preg_match('/(\&gt;)/', $macro['DEF']))
+			{
+				$spec = $spec.'6';
+			}
+
+			$macro['ROLL'] = $dice->bb_replace_dice($spec, 0, $dice->validate(0, $spec));
 			$template->assign_block_vars('macros', $macro );
 			$i++;
 		}

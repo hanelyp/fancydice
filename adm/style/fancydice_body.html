@@ -1,5 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
+
 <h1>{L_SETTINGS}</h1>
 
 <form id="acp_board" method="post" action="{U_ACTION}">
@@ -9,11 +10,13 @@
 			<tr>
 				<td><label for="hanelyp_fancydice_name">{L_ACP_FANCYDICE_DIE_NAME}</label></td>
 				<td><label for="hanelyp_fancydice_def">{L_ACP_FANCYDICE_DIE_DEF}</label></td>
+				<td></td>
 			</tr>
 			<!-- BEGIN macros -->
 			<tr>
-				<td><input name="macroName_{macros.INDEX}" value="{macros.NAME}" size="10"/>&nbsp;
-				<td><input name="macroDef_{macros.INDEX}" value="{macros.DEF}" size="40"/>&nbsp;
+				<td><input name="macroName_{macros.INDEX}" value="{macros.NAME}" size="10"/></td>
+				<td><input name="macroDef_{macros.INDEX}" value="{macros.DEF}" size="40"/></td>
+				<td>{macros.ROLL}</td>
 			</tr>
 			<!-- END macros -->
 			<tr>
