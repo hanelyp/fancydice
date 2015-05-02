@@ -177,9 +177,10 @@ class main_listener implements EventSubscriberInterface
 		//return rand();
 		// random enough value that should never change over the course of making a post,
 		//	but always between posts
-		return (1*$this->user->data['user_lastpost_time']) ^
+		return ((1*$this->user->data['user_lastpost_time']) ^
 				(1*$this->user->data['user_email_hash']) ^
-				($this->config['fancyDiceSecure']*$this->rollcount++);
+				($this->config['fancyDiceSecure']*$this->rollcount++)) &
+				0xffff;
 	}
 	
 	// invoked by bbcode first pass
