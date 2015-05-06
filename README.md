@@ -14,7 +14,13 @@ Configure dice supported.  common nDx+b format supported by default.  Use the bl
 
 ### Presentation
 
-Set html for display of dice rolls. class dicebox is defined by a file under styles.
+Class dicebox is defined by a file under styles.  Presentation may include HTML any any combination of the following tags:
+- {COUNT}	order in which the roll was added to a post.
+- {SPEC}	The dice rolled.
+- {DICE}	Values of individual dice rolled.
+- {TOTAL}	sum of numeric dice plus other dice presented individually.
+- {SUM}		sum of numeric dice.
+- {VALID}	flag if there is a problem with the dice checksum.
 
 ### Reset BBcode Definition
 
