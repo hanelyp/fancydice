@@ -28,7 +28,7 @@ $lang = array_merge($lang, array(
 	'ACP_FANCYDICE_SETTING_PRESENT'	=> 'Presentation template set',
 	'ACP_FANCYDICE_RESET_BB'	=> 'BBCode def reset',
 	'ACP_FANCYDICE_PRESENTATION'	=> 'Presentation HTML for roll results',
-	'ACP_FANCYDICE_PRESENTATION_HELP'	=> '&lt;div class="dicebox">{SPEC} => {DICE} => {TOTAL} {VALID}&lt;/div>',
+	'ACP_FANCYDICE_PRESENTATION_HELP'	=> '&lt;div class="dicebox">{COUNT}: {SPEC} => {DICE} => {TOTAL} {VALID}&lt;/div><br />{SUM} for just the numeric sum',
 	'ACP_FANCYDICE_RESET'		=> 'Reset [dice] BBcode definition',
 	'FANCYDICE_SPECDEF'			=> 'see fancydice.php in this module for dice definition specs',
 	'FANCYDICE_EXCESS_TOKENS'	=> 'Too Many Dice Tokens',

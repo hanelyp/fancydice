@@ -113,6 +113,7 @@ class main_module
 
 		$macros = $this->get_macros();
 		
+		//echo htmlentities($config['fancyDicePresent']), '<br />';
 		$i = 1;
 		$dice = new \hanelyp\fancydice\event\main_listener($config, $user);
 		foreach ($macros as $macro)
@@ -131,7 +132,7 @@ class main_module
 				$spec = $spec.'6';
 			}
 
-			$macro['ROLL'] = $dice->bb_replace_dice($spec, 0, $dice->validate(0, $spec));
+			$macro['ROLL'] = $dice->bb_replace_dice($spec, 0, $dice->validate(0, $spec, 0));
 			$template->assign_block_vars('macros', $macro );
 			$i++;
 		}

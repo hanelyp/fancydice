@@ -12,7 +12,7 @@ class defs
 		'bbcode_helpline'			=> '[dice]3d6+1[/dice]',
 		'first_pass_match'			=> '#\[dice\](.+)\[/dice\]#ie',
 		'first_pass_replace'		=> 'hanelyp\fancydice\event\main_listener::singlet()->bb_prep_dice("$1","$uid")',
-		'second_pass_match'			=> '#\[dice\s+seed=(\d+)\s+secure=(\w+):?\w*\](.+)\[/dice\]#ie',
+		'second_pass_match'			=> '#\[dice\s+seed=(\d+)\s+secure=([\w/+]+):?\w*\](.+)\[/dice\]#ie',
 		'second_pass_replace'		=> 'hanelyp\fancydice\event\main_listener::singlet()->bb_replace_dice("$3",$1,"$2")',
 	);
 	

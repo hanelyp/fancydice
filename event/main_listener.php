@@ -189,16 +189,18 @@ class main_listener implements EventSubscriberInterface
 		//echo "$spec<br />";
 		//global $last_post_time;
 		//echo 'last post '.$last_post_time.'<br />';
+		$count = $this->rollcount;
 		$seed = $this->get_seed(); //rand();
-		$secure = $this->validate($seed, $spec);
+		$secure = $this->validate($seed, $spec, $count);
 		return '[dice seed='.$seed.' secure='.$secure.':'.$uid.']'.$spec.'[/dice]';
 	}
 
 	// not the most secure, but enough to discourage fiddling with the seed
-	function validate($seed, $spec)
+	function validate($seed, $spec, $count)
 	{
 		//echo $this->config['fancyDiceSecure'].' : '.$seed.'<br />';
-		return substr(sha1($this->config['fancyDiceSecure'].$seed.$spec),0, 8);
+		//echo "$seed $spec $count<br />";
+		return substr(sha1($this->config['fancyDiceSecure'].$seed.$spec.$count),0, 8).'_'.$count;
 	}
 
 	// second pass won't call this correctly for post display, but does for post preview		
@@ -206,9 +208,10 @@ class main_listener implements EventSubscriberInterface
 	{
 		//return
 		//debug_print_backtrace(0,2);
-		//echo "$spec - $seed - $secure - ".$this->validate($seed, $spec)."<br />";
+		$securesplit = explode('_', $secure);
+		//echo "$spec - $seed - $secure - ".$this->validate($seed, $spec, $securesplit[1])."<br />";
 		// validate seed against secure
-		$validate = $this->validate($seed, $spec);
+		$validate = $this->validate($seed, $spec, $securesplit[1]); //$spec);
 		$valid = $validate==$secure?'':$this->user->lang('FANCYDICE_FIDDLED'); //' invalid';
 /*		if (strlen($valid) > 0)
 		{
@@ -232,8 +235,8 @@ class main_listener implements EventSubscriberInterface
 							
 		//return '<div class="dicebox">'.$spec.' => '.join(', ', $roll).' => '.$total.$valid.'</div>';
 		$pattern = $this->config['fancyDicePresent'];
-		return preg_replace (array('#{spec}#i', '#{dice}#i', '#{total}#i', '#{valid}#iu'),
-					array($spec, $roll1, $total, $valid),
+		return preg_replace (array('#{spec}#iu', '#{dice}#iu', '#{total}#iu', '#{valid}#iu', '#{sum}#iu', '#{count}#iu'),
+					array($spec, $roll1, $total, $valid, $dice->numsum, $securesplit[1]),
 					$pattern); // */
 		//return $pattern;
 	}

@@ -111,6 +111,7 @@ The spec consists of the following tokens:
 	public $maxtokens = 1000;
 	private $tokencount;
 	public $language;
+	public $numsum = 0;
 
 	function __construct($_macros = false, $seed = false, $language = false)
 	{
@@ -182,6 +183,7 @@ The spec consists of the following tokens:
 		  else
 		  { $sum += $val; }
 		}
+		$this->numsum = 1*$sum;
 		if (count($strings))
 		{ return $sum.' '.join(' ', $strings); }
 		return 1*$sum;
