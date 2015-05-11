@@ -71,6 +71,13 @@ class acp extends \phpbb\db\migration\migration
 		);
 	}
 
+	public function revert_data()
+	{
+		return array(
+			array('custom', array(array($this, 'disable_bbcode'))),
+		);
+	}
+	
 	// reflection on poor core design.
 	function bbcodecount()
 	{
@@ -139,15 +146,58 @@ class acp extends \phpbb\db\migration\migration
 				'second_pass_match'			=> '#\[dice\s+seed=(\d+)\s+secure=([\w/+]+):?\w*\](.+)\[/dice\]#ie',
 				'second_pass_replace'		=> 'hanelyp\fancydice\event\main_listener::singlet()->bb_replace_dice("$3",$1,"$2")',
 			); // */
-			
-
-		
+					
 			$this->db->sql_query('INSERT INTO ' . BBCODES_TABLE . $this->db->sql_build_array('INSERT', $sql_ary));
 			// need to clear cache here
 			//$this->cache->destroy('sql', BBCODES_TABLE);
 			$this->clearcache();
 		}
+		else
+		{
+			$sql_ary = array(
+				//'bbcode_id'					=> $this->bbcodecount(),
+				'bbcode_tag'				=> 'dice',
+				'bbcode_match'				=> '#[dice\s+seed={number}\s+secure={simpletext}]{text}[/dice]#ie',
+				'bbcode_tpl'				=> '<blockquote>hanelyp\fancydice\event\main_listener::singlet()->replace_dice("{text}",{number},"{simpletext}")</blockquote>',
+				'display_on_posting'		=> 1,
+				'bbcode_helpline'			=> '[dice]3d6+1[/dice]',
+				'first_pass_match'			=> '#\[dice\](.+)\[/dice\]#ie',
+				'first_pass_replace'		=> 'hanelyp\fancydice\event\main_listener::singlet()->bb_prep_dice("$1","$uid")',
+				'second_pass_match'			=> '#\[dice\s+seed=(\d+)\s+secure=([\w/+]+):?\w*\](.+)\[/dice\]#ie',
+				'second_pass_replace'		=> 'hanelyp\fancydice\event\main_listener::singlet()->bb_replace_dice("$3",$1,"$2")',
+			); // */
+
+			$db->sql_query('UPDATE ' . BBCODES_TABLE .
+				' SET '.$db->sql_build_array('UPDATE', $sql_ary).
+				' WHERE bbcode_tag = "'.$migration->BB_sql_ary['bbcode_tag'].'"');
+			
+			$this->clearcache();
+		}
 		$this->clearcache();
 		$this->db->sql_freeresult($result);
+	}
+	
+	public function disable_bbcode()
+	{
+/*		$sql_ary = array(
+			//'bbcode_id'					=> $this->bbcodecount(),
+			'bbcode_tag'				=> 'dice',
+			'bbcode_match'				=> '#[dice\s+seed={number}\s+secure={simpletext}]{text}[/dice]#ie',
+			'bbcode_tpl'				=> '<blockquote>hanelyp\fancydice\event\main_listener::singlet()->replace_dice("{text}",{number},"{simpletext}")</blockquote>',
+			'display_on_posting'		=> 1,
+			'bbcode_helpline'			=> '[dice]3d6+1[/dice]',
+			'first_pass_match'			=> '#\[dice\](.+)\[/dice\]#i',
+			'first_pass_replace'		=> '[dice]$1[/dice]',
+			'second_pass_match'			=> '#\[dice\s+seed=(\d+)\s+secure=([\w/+]+):?\w*\](.+)\[/dice\]#i',
+			'second_pass_replace'		=> '<blockquote>$3</blockquote>)',
+		); // */
+
+/*		$db->sql_query('UPDATE ' . BBCODES_TABLE .
+			' SET '.$db->sql_build_array('UPDATE', $sql_ary).
+			' WHERE bbcode_tag = "'.$migration->BB_sql_ary['bbcode_tag'].'"');
+*/
+		$db->sql_query('DELETE FROM '.BBCODES_TABLE .
+			' WHERE bbcode_tag = "dice"');
+		$this->clearcache();
 	}
 }
