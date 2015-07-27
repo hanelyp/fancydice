@@ -127,12 +127,14 @@ class main_listener implements EventSubscriberInterface
 		/*
 		cancel, forum_id, load, message_parser, mode, post_data, post_id, preview, refresh, save, submit, topic_id 
 		*/
-		//print_r ($event['post_data']);
-		//echo '<br />';
-		$message = $event['message_parser']->message.'<br />';
-		// count already prepped dice in post
-		$this->rollcount = preg_match_all('#\[dice\sseed=(\d+)\ssecure=(\w+):?\w*\](.+?)\[/dice\]#i',
-					$message);
+		if ($this->rollcount == 0)
+		{
+			$message = $event['message_parser']->message.'<br />';
+			// count already prepped dice in post
+			$jnk = array();
+			$this->rollcount = preg_match_all('#\[dice\sseed=(\d+)\ssecure=(\w+):?\w*\](.+?)\[/dice\]#i',
+						$message, $jnk);
+		}
 		//echo 'prior count '.$this->rollcount.'<br />';
 	}
 
