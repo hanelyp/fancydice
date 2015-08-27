@@ -116,10 +116,10 @@ class main_listener implements EventSubscriberInterface
 
 	}
 	
-	public function user_data($event)
+/*	public function user_data($event)
 	{
 		print_r($event['user_data']);
-	}
+	}	// */
 
 	public function dice_process_posting($event)
 	{
